@@ -187,16 +187,17 @@ func handlerStatus(webprint http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
 
-	webprint.WriteHeader(http.StatusOK)
-
 	if len(vars["device"]) > 0 {
 		if value, ok := allDevices[strings.ToLower(vars["device"])]; ok {
+			webprint.WriteHeader(http.StatusOK)
 			// fmt.Fprintf(webprint, "Device=%s\nLastCheckinTime=%s", strings.ToLower(vars["device"]), allDevices[strings.ToLower(vars["device"])])
 			fmt.Fprintf(webprint, "Device=%s\nLastCheckinTime=%s", strings.ToLower(vars["device"]), value)
 		} else {
+			webprint.WriteHeader(http.StatusBadRequest)
 			fmt.Fprintf(webprint, "Device doesn't exist")
 		}
 	} else {
+		webprint.WriteHeader(http.StatusOK)
 		for _, v := range viper.GetStringSlice("devices") {
 			fmt.Fprintf(webprint, "Device=%s\nLastCheckinTime=%s\n\n", strings.ToLower(v), allDevices[strings.ToLower(v)])
 		}

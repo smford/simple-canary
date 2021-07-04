@@ -19,7 +19,7 @@ import (
 	"time"
 )
 
-const APPVERSION = "0.0.3"
+const APPVERSION = "0.0.4"
 const CHECKINTOKEN = "sometoken"
 const STATUSTOKEN = "statustoken"
 const LISTENIP = "0.0.0.0"
@@ -159,26 +159,36 @@ func handlerIndex(w http.ResponseWriter, r *http.Request) {
 }
 
 func handlerCheckin(webprint http.ResponseWriter, r *http.Request) {
-	fmt.Println("starting handlercheckin")
-	queries := r.URL.Query()
-	fmt.Printf("queries = %q\n", queries)
+	// check if checkintoken is valid
+	/*
+		if CHECKINTOKEN != queries.Get("token") {
+			webprint.WriteHeader(http.StatusUnauthorized)
+			fmt.Println("ERROR: Invalid API Token", queries.Get("token"))
+			fmt.Fprintf(webprint, "%s", "ERROR: Invalid API Token")
+			return
+		}
+	*/
 
-	// check if api token is valid
-	if CHECKINTOKEN != queries.Get("token") {
-		fmt.Println("ERROR: Invalid API Token", queries.Get("token"))
-		fmt.Fprintf(webprint, "%s", "ERROR: Invalid API Token")
-		return
+	vars := mux.Vars(r)
+
+	if len(vars["device"]) > 0 {
+		if _, ok := allDevices[strings.ToLower(vars["device"])]; ok {
+			webprint.WriteHeader(http.StatusOK)
+			allDevices[strings.ToLower(vars["device"])] = time.Now()
+			fmt.Fprintf(webprint, "Device=%s\nLastCheckinTime=%s", strings.ToLower(vars["device"]), allDevices[strings.ToLower(vars["device"])])
+		} else {
+			webprint.WriteHeader(http.StatusBadRequest)
+			fmt.Fprintf(webprint, "Device doesn't exist")
+		}
 	}
+
 }
 
 func handlerStatus(webprint http.ResponseWriter, r *http.Request) {
-	fmt.Println("starting handlerstatus")
-	queries := r.URL.Query()
-	fmt.Printf("queries = %q\n", queries)
-
-	// check if api token is valid
+	// check if statustoken is valid
 	/*
 		if STATUSTOKEN != queries.Get("token") {
+			webprint.WriteHeader(http.StatusUnauthorized)
 			fmt.Println("ERROR: Invalid API Token", queries.Get("token"))
 			fmt.Fprintf(webprint, "%s", "ERROR: Invalid API Token")
 			return

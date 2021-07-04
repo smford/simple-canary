@@ -19,7 +19,7 @@ import (
 	"time"
 )
 
-const APPVERSION = "0.0.2"
+const APPVERSION = "0.0.3"
 const CHECKINTOKEN = "sometoken"
 const STATUSTOKEN = "statustoken"
 const LISTENIP = "0.0.0.0"
@@ -79,30 +79,24 @@ func init() {
 		}
 	}
 
-	fmt.Println("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=")
+	// configure all devices to have a zero time
 	for _, v := range viper.GetStringSlice("devices") {
-		allDevices[strings.ToLower(v)] = time.Now()
+		allDevices[strings.ToLower(v)] = time.Time{}
 	}
 
-	for _, v := range viper.GetStringSlice("devices") {
-		fmt.Printf("v=%s time=%s\n", v, allDevices[v].String())
-	}
-	fmt.Println("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=")
-
-}
-
-func main() {
 	if viper.GetBool("displayconfig") {
 		displayConfig()
 		os.Exit(0)
 	}
 
+}
+
+func main() {
 	fmt.Println("Simple-canary is now running.  Press CTRL-C to exit.")
 	startWeb(LISTENIP, LISTENPORT, false)
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
 	<-sc
-
 }
 
 func startWeb(listenip string, listenport string, usetls bool) {
@@ -134,11 +128,10 @@ func startWeb(listenip string, listenport string, usetls bool) {
 
 	err := srv.ListenAndServe()
 
-	fmt.Println("cannot start http server:", err)
+	fmt.Println("Cannot start http server:", err)
 }
 
 func printFile(filename string, webprint http.ResponseWriter) {
-	fmt.Println("Starting printFile")
 	texttoprint, err := ioutil.ReadFile(filename)
 	if err != nil {
 		fmt.Println("ERROR: cannot open ", filename)

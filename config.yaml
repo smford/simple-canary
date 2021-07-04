@@ -1,0 +1,6 @@
+token: sometoken
+ttl: 10
+devices:
+- Frontdoor
+- BACKDOOR
+- laSER

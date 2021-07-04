@@ -19,28 +19,14 @@ import (
 	"time"
 )
 
-const APPVERSION = "0.0.1"
-const APITOKEN = "sometoken"
+const APPVERSION = "0.0.2"
+const CHECKINTOKEN = "sometoken"
+const STATUSTOKEN = "statustoken"
 const LISTENIP = "0.0.0.0"
 const LISTENPORT = "54034"
 const INDEXHTML = "index.html"
 
-var (
-	allDevices     []Device
-	allDevicesTime []DeviceTime
-)
-
-var mapSteve = make(map[string]time.Time)
-
-type Device struct {
-	Name        string `json:"name"`
-	Lastcheckin string `json:"lastcheckin,omitempty"`
-}
-
-type DeviceTime struct {
-	Name        string    `json:"name"`
-	Lastcheckin time.Time `json:"lastcheckin,omitempty"`
-}
+var allDevices = make(map[string]time.Time)
 
 func init() {
 	fmt.Println("Simple-canary v" + APPVERSION)
@@ -93,52 +79,13 @@ func init() {
 		}
 	}
 
-	// configure in memory device tracking
-	for _, v := range viper.GetStringSlice("devices") {
-		fmt.Printf("value[%s]\n", v)
-
-		d1 := Device{
-			Name:        v,
-			Lastcheckin: "poos",
-		}
-
-		d1time := DeviceTime{
-			Name:        v,
-			Lastcheckin: time.Now(),
-		}
-
-		allDevices = append(allDevices, d1)
-		allDevicesTime = append(allDevicesTime, d1time)
-	}
-
-	fmt.Println("allDevices unformated:")
-	fmt.Println(allDevices)
-	fmt.Println("========")
-
-	fmt.Println("allDevices=")
-	for k, v := range allDevices {
-		fmt.Printf("key[%d] value[%s]\n", k, v)
-	}
-	fmt.Println("-------------------------------------")
-	fmt.Println("allDevicesTime unformated:")
-	fmt.Println(allDevicesTime)
-	fmt.Println("========")
-
-	fmt.Println("allDevicesTime=")
-	for k, v := range allDevicesTime {
-		fmt.Printf("key[%d] value[%s]\n", k, v)
-	}
-
-	// make a map  device["name"]
-	//mapSteve := make(map[string]time.Time)
-
 	fmt.Println("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=")
 	for _, v := range viper.GetStringSlice("devices") {
-		mapSteve[strings.ToLower(v)] = time.Now()
+		allDevices[strings.ToLower(v)] = time.Now()
 	}
 
 	for _, v := range viper.GetStringSlice("devices") {
-		fmt.Printf("v=%s time=%s\n", v, mapSteve[v].String())
+		fmt.Printf("v=%s time=%s\n", v, allDevices[v].String())
 	}
 	fmt.Println("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=")
 
@@ -224,7 +171,7 @@ func handlerCheckin(webprint http.ResponseWriter, r *http.Request) {
 	fmt.Printf("queries = %q\n", queries)
 
 	// check if api token is valid
-	if APITOKEN != queries.Get("token") {
+	if CHECKINTOKEN != queries.Get("token") {
 		fmt.Println("ERROR: Invalid API Token", queries.Get("token"))
 		fmt.Fprintf(webprint, "%s", "ERROR: Invalid API Token")
 		return
@@ -238,7 +185,7 @@ func handlerStatus(webprint http.ResponseWriter, r *http.Request) {
 
 	// check if api token is valid
 	/*
-		if APITOKEN != queries.Get("token") {
+		if STATUSTOKEN != queries.Get("token") {
 			fmt.Println("ERROR: Invalid API Token", queries.Get("token"))
 			fmt.Fprintf(webprint, "%s", "ERROR: Invalid API Token")
 			return
@@ -250,22 +197,16 @@ func handlerStatus(webprint http.ResponseWriter, r *http.Request) {
 	webprint.WriteHeader(http.StatusOK)
 
 	if len(vars["device"]) > 0 {
-		fmt.Fprintf(webprint, "%s%s", "Device=", vars["device"])
-		//fmt.Fprintf(webprint, "\n%s%s", "struct=", allDevices[0])
-		//mapSteve[strings.ToLower(vars["device"])]
-		fmt.Fprintf(webprint, "\n\nSteveDevice=%s\nSteveTime=%s", strings.ToLower(vars["device"]), mapSteve[strings.ToLower(vars["device"])])
+		if value, ok := allDevices[strings.ToLower(vars["device"])]; ok {
+			// fmt.Fprintf(webprint, "Device=%s\nLastCheckinTime=%s", strings.ToLower(vars["device"]), allDevices[strings.ToLower(vars["device"])])
+			fmt.Fprintf(webprint, "Device=%s\nLastCheckinTime=%s", strings.ToLower(vars["device"]), value)
+		} else {
+			fmt.Fprintf(webprint, "Device doesn't exist")
+		}
 	} else {
-		//fmt.Fprintf(webprint, "%s", viper.GetStringSlice("devices"))
-		fmt.Fprintf(webprint, "Devices:\n")
 		for _, v := range viper.GetStringSlice("devices") {
-			fmt.Printf("value[%s]\n", v)
-			fmt.Fprintf(webprint, "v=%s\n", v)
+			fmt.Fprintf(webprint, "Device=%s\nLastCheckinTime=%s\n\n", strings.ToLower(v), allDevices[strings.ToLower(v)])
 		}
-
-		for _, v := range viper.GetStringSlice("devices") {
-			fmt.Printf("v=%s time=%s\n", v, mapSteve[v].String())
-		}
-
 	}
 
 }

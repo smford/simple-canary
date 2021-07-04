@@ -19,7 +19,7 @@ import (
 	"time"
 )
 
-const APPVERSION = "0.0.4"
+const APPVERSION = "0.0.5"
 const CHECKINTOKEN = "sometoken"
 const STATUSTOKEN = "statustoken"
 const LISTENIP = "0.0.0.0"
@@ -201,15 +201,15 @@ func handlerStatus(webprint http.ResponseWriter, r *http.Request) {
 		if value, ok := allDevices[strings.ToLower(vars["device"])]; ok {
 			webprint.WriteHeader(http.StatusOK)
 			// fmt.Fprintf(webprint, "Device=%s\nLastCheckinTime=%s", strings.ToLower(vars["device"]), allDevices[strings.ToLower(vars["device"])])
-			fmt.Fprintf(webprint, "Device=%s\nLastCheckinTime=%s", strings.ToLower(vars["device"]), value)
+			fmt.Fprintf(webprint, "Device=%s\nLastCheckinTime=%s State=%s", strings.ToLower(vars["device"]), value, checkTTL(value))
 		} else {
 			webprint.WriteHeader(http.StatusBadRequest)
 			fmt.Fprintf(webprint, "Device doesn't exist")
 		}
 	} else {
 		webprint.WriteHeader(http.StatusOK)
-		for _, v := range viper.GetStringSlice("devices") {
-			fmt.Fprintf(webprint, "Device=%s\nLastCheckinTime=%s\n\n", strings.ToLower(v), allDevices[strings.ToLower(v)])
+		for _, value := range viper.GetStringSlice("devices") {
+			fmt.Fprintf(webprint, "Device=%s\nLastCheckinTime=%s State=%s\n\n", strings.ToLower(value), allDevices[strings.ToLower(value)], checkTTL(allDevices[strings.ToLower(value)]))
 		}
 	}
 
@@ -236,5 +236,13 @@ func displayConfig() {
 	sort.Strings(keys)
 	for _, k := range keys {
 		fmt.Println("CONFIG:", k, ":", allmysettings[k])
+	}
+}
+
+func checkTTL(checkthis time.Time) string {
+	if time.Now().Sub(checkthis).Seconds() >= float64(viper.GetInt("ttl")) {
+		return "error"
+	} else {
+		return "good"
 	}
 }

@@ -120,6 +120,19 @@ Command Line Options
   --version                          Display version
 ```
 
+API Endpoints
+-------------
+
+Assuming simple-canary is configured to use 192.168.10.1:54034 and there is a device called `frontdoor_bot`
+
+| Task | URL |
+|:--|:--|
+| Display index.html | `http://192.168.10.1:54034/` |
+| Checkin device `frontdoor_bot` | `http://192.168.10.1:54034/checkin/frontdoor_bot?token=checkintoken` |
+| Get Status for `frontdoor_bot` | `http://192.168.10.1:54034/status/frontdoor_bot?token=statustoken` |
+| Get Status for all devices | `http://192.168.10.1:54034/status?token=statustoken` |
+
+
 
 To Do
 -----

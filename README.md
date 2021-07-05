@@ -21,6 +21,20 @@ You have a number of IoT devices, servers and cronjobs that you need to know are
 1. Simple-canary watches for the "checkins" from each device, and if one hasn't been received within a specified time limit, it will update the status page that uptimerobot monitors
 1. Uptimerobot then sees that a particular device is offline and does whatever actions you have defined
 
+Installation
+------------
+You can use any of these methods to install:
+- `# go get -v github.com/smford/simple-canary`
+
+Clone git repo and build yourself
+- `# git clone git@github.com:smford/simple-canary.git`
+- `cd simple-canary`
+- `# go build`
+
+Via Docker
+- something
+- more
+
 
 Configuration
 -------------
@@ -69,14 +83,15 @@ Starting simple-canary
 
 After configuring the config.yaml in the same directory as the simple-canary executable, simply:
 
-`./simple-canary`
+`# simple-canary`
 
 
 If you want to have the configuration file in a different location, you can start simple-canary like so:
 
-`simple-canary --config /path/to/config.yaml`
+`# simple-canary --config /path/to/config.yaml`
 
-### Configure Clients
+Configure Clients
+-----------------
 
 - IoT Device, assuming the IoT device is called "frontdoor"
   Configure it to do an http request to: `http://192.168.10.1:54034/checkin/frontdoor?token=mycheckintoken`
@@ -85,10 +100,12 @@ If you want to have the configuration file in a different location, you can star
 `*/5 * * * * wget --spider "http://192.168.10.1:54034/checkin/server1?token=mycheckintoken" >/dev/null 2>&1`
 
 
-### Configuring UptimeRobot.com Monitors
+Configuring UptimeRobot.com Monitors
+------------------------------------
 
 
-## Command Line Options
+Command Line Options
+--------------------
 ```
   --config [config file]             Configuration file: /path/to/file.yaml, default = ./config.yaml
   --displayconfig                    Display configuration
@@ -96,8 +113,8 @@ If you want to have the configuration file in a different location, you can star
   --version                          Display version
 ```
 
-## Installation Using Docker
 
-## To Do
+To Do
+-----
 - per device TTL
 - per device checkintoken

@@ -61,7 +61,28 @@ Run:
 ### Configuring UptimeRobot.com Monitors
 
 ## Configuration File Options
+| Setting | Details |
+|:--|:--|
+| checkintoken | Token used by a device to checkin |
+| statustoken | Token used to display status information |
+| statustokencheck | Use statustoken or not |
+| listenip | The IP for simple-canary to listen to, 0.0.0.0 = all IPs |
+| listenport | The port that simple-canary should listen on |
+| indexhtml | the name and path to the file that is shown when people visit the main page of simple-canary |
+| ttl | The number of seconds to wait after a checkin before marking a device as offline|
+| devices | A list of devices to accept checkins for |
+| verbose | Enable verbose mode.  Note tokens will be displayed in the logs |
 
 ## Command Line Options
+```
+  --config [config file]             Configuration file: /path/to/file.yaml, default = ./config.yaml
+  --displayconfig                    Display configuration
+  --help                             Display help
+  --version                          Display version
+```
 
 ## Installation Using Docker
+
+## To Do
+- per device TTL
+- per device checkintoken

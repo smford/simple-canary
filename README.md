@@ -1,4 +1,5 @@
-# simple-canary
+simple-canary
+=============
 
 A simple canary monitor.
 
@@ -10,7 +11,8 @@ Uptimerobot allows for up to 50 checks on its free service, however their ping s
 
 This tool allows you to use their http/https or keyword monitor methods to have the same capabilities as their "Heartbeat" service but for free.
 
-## Example Usage
+Example Usage
+-------------
 
 Scenario: You have a number of IoT devices, servers and cronjobs that you need to know are working and are online.
 
@@ -20,31 +22,48 @@ Scenario: You have a number of IoT devices, servers and cronjobs that you need t
 1. Uptimerobot then sees that a particular device is offline and does whatever actions you have defined
 
 
-## Configuration
+Configuration
+-------------
 
-You must configure the simple-canary server, the things you wish to monitor, and uptimerobot.
+For simple-canary to work you must configure three things:
+. the simple-canary server
+. configured each device to checkin to simple-canary
+. configure uptimerobot to monitor the devices specific status page
 
-### Configure Simple-canary Server
-Create a configuration file called `config.yaml` an example is available below:
 
-```
-checkintoken: mycheckintoken
-statustoken: mystatustoken
-statustokencheck: false
-listenip: 0.0.0.0
-listenport: 54034
-indexhtml: index.html
-ttl: 300
-devices:
-- frontdoor
-- kitchen
-- rollerdoor
-- laser
-- cronjob1
-- cronjob2
-- server1
-verbose: false
-```
+1. Create a configuration file called `config.yaml` an example is available below:
+  ```
+  checkintoken: mycheckintoken
+  statustoken: mystatustoken
+  statustokencheck: false
+  listenip: 0.0.0.0
+  listenport: 54034
+  indexhtml: index.html
+  ttl: 300
+  devices:
+  - frontdoor
+  - kitchen
+  - rollerdoor
+  - laser
+  - cronjob1
+  - cronjob2
+  - server1
+  verbose: false
+  ```
+
+Configuration File Options
+--------------------------
+| Setting | Details |
+|:--|:--|
+| checkintoken | Token used by a device to checkin |
+| statustoken | Token used to display status information |
+| statustokencheck | Use statustoken or not |
+| listenip | The IP for simple-canary to listen to, 0.0.0.0 = all IPs |
+| listenport | The port that simple-canary should listen on |
+| indexhtml | the name and path to the file that is shown when people visit the main page of simple-canary |
+| ttl | The number of seconds to wait after a checkin before marking a device as offline|
+| devices | A list of devices to accept checkins for |
+| verbose | Enable verbose mode.  Note tokens will be displayed in the logs |
 
 Run:
 `simple-canary --config /path/to/config.yaml`
@@ -60,18 +79,6 @@ Run:
 
 ### Configuring UptimeRobot.com Monitors
 
-## Configuration File Options
-| Setting | Details |
-|:--|:--|
-| checkintoken | Token used by a device to checkin |
-| statustoken | Token used to display status information |
-| statustokencheck | Use statustoken or not |
-| listenip | The IP for simple-canary to listen to, 0.0.0.0 = all IPs |
-| listenport | The port that simple-canary should listen on |
-| indexhtml | the name and path to the file that is shown when people visit the main page of simple-canary |
-| ttl | The number of seconds to wait after a checkin before marking a device as offline|
-| devices | A list of devices to accept checkins for |
-| verbose | Enable verbose mode.  Note tokens will be displayed in the logs |
 
 ## Command Line Options
 ```

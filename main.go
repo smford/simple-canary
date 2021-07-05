@@ -175,12 +175,14 @@ func handlerCheckin(webprint http.ResponseWriter, r *http.Request) {
 
 	if len(vars["device"]) > 0 {
 		if _, ok := allDevices[strings.ToLower(vars["device"])]; ok {
+			//if device exists in config
 			webprint.WriteHeader(http.StatusOK)
 			allDevices[strings.ToLower(vars["device"])] = time.Now()
-			fmt.Fprintf(webprint, "Device=%s\nLastCheckinTime=%s", strings.ToLower(vars["device"]), allDevices[strings.ToLower(vars["device"])])
+			fmt.Fprintf(webprint, "OK")
 		} else {
+			// if device doesnt exist in config
 			webprint.WriteHeader(http.StatusBadRequest)
-			fmt.Fprintf(webprint, "Device doesn't exist")
+			fmt.Fprintf(webprint, "ERROR")
 		}
 	}
 

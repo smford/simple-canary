@@ -1,6 +1,13 @@
-token: sometoken
+checkintoken: sometoken
+statustoken: statustoken
+statustokencheck: false
+listenip: 0.0.0.0
+listenport: 54034
+indexhtml: index.html
 ttl: 10
 devices:
-- Frontdoor
-- BACKDOOR
-- laSER
+- frontdoor
+- kitchen
+- rollerdoor
+- laser
+verbose: false

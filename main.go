@@ -19,21 +19,22 @@ import (
 	"time"
 )
 
-const APPVERSION = "0.0.5"
-const CHECKINTOKEN = "sometoken"
-const STATUSTOKEN = "statustoken"
-const LISTENIP = "0.0.0.0"
-const LISTENPORT = "54034"
-const INDEXHTML = "index.html"
+const APPVERSION = "0.0.7"
 
 var allDevices = make(map[string]time.Time)
+
+var CHECKINTOKEN string
+var STATUSTOKEN string
+var LISTENIP string
+var LISTENPORT string
+var INDEXHTML string
 
 func init() {
 	fmt.Println("Simple-canary v" + APPVERSION)
 	flag.Bool("help", false, "Display help")
 	flag.String("config", "config.yaml", "Configuration file: /path/to/file.yaml, default = ./config.yaml")
 	flag.Bool("version", false, "Display version")
-	flag.Bool("verbose", true, "Be verbose")
+	flag.Bool("verbose", false, "Be verbose")
 	flag.Bool("displayconfig", false, "Display configuration")
 
 	pflag.CommandLine.AddGoFlagSet(flag.CommandLine)
@@ -56,11 +57,6 @@ func init() {
 		configdir = "."
 	}
 
-	if viper.GetBool("verbose") {
-		fmt.Println("   DIR:", configdir)
-		fmt.Println("  FILE:", configfile)
-	}
-
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath(configdir)
 
@@ -79,11 +75,19 @@ func init() {
 		}
 	}
 
-	// configure all devices to have a zero time
+	// assign configuration loaded from file to global variables
+	CHECKINTOKEN = viper.GetString("checkintoken")
+	STATUSTOKEN = viper.GetString("statustoken")
+	LISTENIP = viper.GetString("listenip")
+	LISTENPORT = viper.GetString("listenport")
+	INDEXHTML = viper.GetString("indexhtml")
+
+	// configure all devices to have a "zero" time
 	for _, v := range viper.GetStringSlice("devices") {
 		allDevices[strings.ToLower(v)] = time.Time{}
 	}
 
+	// display configuration
 	if viper.GetBool("displayconfig") {
 		displayConfig()
 		os.Exit(0)
@@ -114,8 +118,10 @@ func startWeb(listenip string, listenport string, usetls bool) {
 	// all devices status
 	r.HandleFunc("/status", handlerStatus)
 
-	// enable logging
-	r.Use(loggingMiddleware)
+	// enable verbose logging
+	if viper.GetBool("verbose") {
+		r.Use(loggingMiddleware)
+	}
 
 	log.Printf("Starting HTTP Webserver http://%s:%s\n", listenip, listenport)
 
@@ -133,17 +139,15 @@ func startWeb(listenip string, listenport string, usetls bool) {
 
 func printFile(filename string, webprint http.ResponseWriter) {
 	texttoprint, err := ioutil.ReadFile(filename)
+
 	if err != nil {
 		fmt.Println("ERROR: cannot open ", filename)
 		if webprint != nil {
 			http.Error(webprint, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		}
 	}
-	if webprint != nil {
-		fmt.Fprintf(webprint, "%s", string(texttoprint))
-	} else {
-		fmt.Print(string(texttoprint))
-	}
+
+	fmt.Fprintf(webprint, "%s", string(texttoprint))
 }
 
 func loggingMiddleware(next http.Handler) http.Handler {
@@ -154,20 +158,18 @@ func loggingMiddleware(next http.Handler) http.Handler {
 }
 
 func handlerIndex(w http.ResponseWriter, r *http.Request) {
-	log.Println("Starting handlerIndex")
 	printFile(INDEXHTML, w)
 }
 
 func handlerCheckin(webprint http.ResponseWriter, r *http.Request) {
 	// check if checkintoken is valid
-	/*
-		if CHECKINTOKEN != queries.Get("token") {
-			webprint.WriteHeader(http.StatusUnauthorized)
-			fmt.Println("ERROR: Invalid API Token", queries.Get("token"))
-			fmt.Fprintf(webprint, "%s", "ERROR: Invalid API Token")
-			return
-		}
-	*/
+	queries := r.URL.Query()
+	if CHECKINTOKEN != queries.Get("token") {
+		webprint.WriteHeader(http.StatusUnauthorized)
+		log.Printf("Error:Invalid Checkin Token Received")
+		fmt.Fprintf(webprint, "%s", "ERROR: Invalid Checkin Token")
+		return
+	}
 
 	vars := mux.Vars(r)
 
@@ -186,14 +188,15 @@ func handlerCheckin(webprint http.ResponseWriter, r *http.Request) {
 
 func handlerStatus(webprint http.ResponseWriter, r *http.Request) {
 	// check if statustoken is valid
-	/*
+	if viper.GetBool("statustokencheck") {
+		queries := r.URL.Query()
 		if STATUSTOKEN != queries.Get("token") {
 			webprint.WriteHeader(http.StatusUnauthorized)
-			fmt.Println("ERROR: Invalid API Token", queries.Get("token"))
-			fmt.Fprintf(webprint, "%s", "ERROR: Invalid API Token")
+			log.Printf("Error:Invalid Status Token Received")
+			fmt.Fprintf(webprint, "%s", "ERROR: Invalid Status Token")
 			return
 		}
-	*/
+	}
 
 	vars := mux.Vars(r)
 

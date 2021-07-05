@@ -19,7 +19,7 @@ import (
 	"time"
 )
 
-const APPVERSION = "0.0.8"
+const APPVERSION = "0.0.9"
 
 var allDevices = make(map[string]time.Time)
 
@@ -218,30 +218,48 @@ func handlerStatus(webprint http.ResponseWriter, r *http.Request) {
 			}
 		*/
 
-		var template = "<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>"
-		fmt.Fprintf(webprint, "<table>")
-		fmt.Fprintf(webprint, "<tr><th align='left'>Device</th><th align='left'>LastCheckin</th><th align='left'>SecondsSinceCheckin</th><th align='left'>State</th></tr>")
+		var template = "      <tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>\n"
+
+		header := `<!DOCTYPE HTML>
+<html>
+<head>
+  <title>Status Page</title>
+  <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.6/build/pure-min.css" integrity="sha384-Uu6IeWbM+gzNVXJcM9XV3SohHtmWE+3VGi496jvgX1jyvDTXfdK+rfZc8C1Aehk5" crossorigin="anonymous">
+</head>
+<body>
+`
+
+		footer := `</body>
+</html>`
+
+		fmt.Fprintf(webprint, header)
+		fmt.Fprintf(webprint, "  <table class=\"pure-table pure-table-bordered\">\n")
+		fmt.Fprintf(webprint, "    <thead><tr><th>Device</th><th>Last Checkin</th><th>Seconds Since Checkin</th><th>State</th></tr></thead>\n")
+		fmt.Fprintf(webprint, "    <tbody>\n")
 		datelayout := "Mon Jan _2 15:04:05 MST 2006"
 
 		var lastcheckindate string
 		var timesincelastcheckin string
+		var status string
 
 		for _, value := range viper.GetStringSlice("devices") {
 
 			if allDevices[strings.ToLower(value)].IsZero() {
 				lastcheckindate = "Never"
 				timesincelastcheckin = "Never"
+				status = "Offline"
 			} else {
 				lastcheckindate = allDevices[strings.ToLower(value)].Format(datelayout)
 				timesincelastcheckin = timeSinceLastCheckin(allDevices[strings.ToLower(value)])
+				status = checkTTL(allDevices[strings.ToLower(value)])
 			}
 
-			fmt.Fprintf(webprint, template, strings.ToLower(value), lastcheckindate, timesincelastcheckin, checkTTL(allDevices[strings.ToLower(value)]))
-
-			//fmt.Fprintf(webprint, template, strings.ToLower(value), allDevices[strings.ToLower(value)].Format(datelayout), timeSinceLastCheckin(allDevices[strings.ToLower(value)]), checkTTL(allDevices[strings.ToLower(value)]))
+			fmt.Fprintf(webprint, template, strings.ToLower(value), lastcheckindate, timesincelastcheckin, status)
 
 		}
-		fmt.Fprintf(webprint, "</table>")
+		fmt.Fprintf(webprint, "    </tbody>\n")
+		fmt.Fprintf(webprint, "  </table>\n")
+		fmt.Fprintf(webprint, footer)
 
 	}
 
@@ -273,9 +291,9 @@ func displayConfig() {
 
 func checkTTL(checkthis time.Time) string {
 	if time.Now().Sub(checkthis).Seconds() >= float64(viper.GetInt("ttl")) {
-		return "inactive"
+		return "Offline"
 	} else {
-		return "active"
+		return "Online"
 	}
 }
 

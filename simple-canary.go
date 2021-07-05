@@ -1,7 +1,6 @@
 package main
 
 import (
-	//"encoding/json"
 	"flag"
 	"fmt"
 	"github.com/gorilla/mux"
@@ -19,7 +18,7 @@ import (
 	"time"
 )
 
-const APPVERSION = "0.0.9"
+const APPVERSION = "0.1.0"
 
 var allDevices = make(map[string]time.Time)
 
@@ -66,13 +65,11 @@ func init() {
 	viper.SetConfigName(config)
 	err := viper.ReadInConfig()
 	if err != nil {
-		if !viper.GetBool("silent") {
-			fmt.Println("ERROR: No config file found")
-			if viper.GetBool("verbose") {
-				fmt.Printf("%s\n", err)
-			}
-			os.Exit(1)
+		fmt.Println("ERROR: No config file found")
+		if viper.GetBool("verbose") {
+			fmt.Printf("%s\n", err)
 		}
+		os.Exit(1)
 	}
 
 	// assign configuration loaded from file to global variables
@@ -134,14 +131,14 @@ func startWeb(listenip string, listenport string, usetls bool) {
 
 	err := srv.ListenAndServe()
 
-	fmt.Println("Cannot start http server:", err)
+	fmt.Println("Cannot start Simple-canary server:", err)
 }
 
 func printFile(filename string, webprint http.ResponseWriter) {
 	texttoprint, err := ioutil.ReadFile(filename)
 
 	if err != nil {
-		fmt.Println("ERROR: cannot open ", filename)
+		log.Println("ERROR: cannot open ", filename)
 		if webprint != nil {
 			http.Error(webprint, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		}
@@ -205,8 +202,6 @@ func handlerStatus(webprint http.ResponseWriter, r *http.Request) {
 	if len(vars["device"]) > 0 {
 		if value, ok := allDevices[strings.ToLower(vars["device"])]; ok {
 			webprint.WriteHeader(http.StatusOK)
-			// fmt.Fprintf(webprint, "Device=%s\nLastCheckinTime=%s", strings.ToLower(vars["device"]), allDevices[strings.ToLower(vars["device"])])
-			//fmt.Fprintf(webprint, "Device=%s\nLastCheckinTime=%s State=%s", strings.ToLower(vars["device"]), value, checkTTL(value))
 			fmt.Fprintf(webprint, "%s", checkTTL(value))
 		} else {
 			webprint.WriteHeader(http.StatusBadRequest)
@@ -214,11 +209,6 @@ func handlerStatus(webprint http.ResponseWriter, r *http.Request) {
 		}
 	} else {
 		webprint.WriteHeader(http.StatusOK)
-		/*
-			for _, value := range viper.GetStringSlice("devices") {
-				fmt.Fprintf(webprint, "Device=%s\nLastCheckinTime=%s SecondsSinceLastCheckin=%s State=%s\n\n", strings.ToLower(value), allDevices[strings.ToLower(value)], timeSinceLastCheckin(allDevices[strings.ToLower(value)]), checkTTL(allDevices[strings.ToLower(value)]))
-			}
-		*/
 
 		var template = "      <tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>\n"
 

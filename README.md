@@ -11,10 +11,10 @@ Uptimerobot allows for up to 50 checks on its free service, however their ping s
 
 This tool allows you to use their http/https or keyword monitor methods to have the same capabilities as their "Heartbeat" service but for free.
 
-Example Usage
+Usage Scenario
 -------------
 
-Scenario: You have a number of IoT devices, servers and cronjobs that you need to know are working and are online.
+You have a number of IoT devices, servers and cronjobs that you need to know are working and are online.
 
 1. You configure each server, IoT device and cronjob to "checkin" to a unique simple-canary url with a token (password)
 1. Uptimerobot is then configured to monitor a specific "status" page that simple-canary presents for each server, iot device or cronjob
@@ -26,9 +26,9 @@ Configuration
 -------------
 
 For simple-canary to work you must configure three things:
-. the simple-canary server
-. configured each device to checkin to simple-canary
-. configure uptimerobot to monitor the devices specific status page
+- the simple-canary server
+- configured each device to checkin to simple-canary
+- configure uptimerobot to monitor the devices specific status page
 
 
 1. Create a configuration file called `config.yaml` an example is available below:

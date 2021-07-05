@@ -19,7 +19,7 @@ import (
 	"time"
 )
 
-const APPVERSION = "0.0.7"
+const APPVERSION = "0.0.8"
 
 var allDevices = make(map[string]time.Time)
 
@@ -204,16 +204,45 @@ func handlerStatus(webprint http.ResponseWriter, r *http.Request) {
 		if value, ok := allDevices[strings.ToLower(vars["device"])]; ok {
 			webprint.WriteHeader(http.StatusOK)
 			// fmt.Fprintf(webprint, "Device=%s\nLastCheckinTime=%s", strings.ToLower(vars["device"]), allDevices[strings.ToLower(vars["device"])])
-			fmt.Fprintf(webprint, "Device=%s\nLastCheckinTime=%s State=%s", strings.ToLower(vars["device"]), value, checkTTL(value))
+			//fmt.Fprintf(webprint, "Device=%s\nLastCheckinTime=%s State=%s", strings.ToLower(vars["device"]), value, checkTTL(value))
+			fmt.Fprintf(webprint, "%s", checkTTL(value))
 		} else {
 			webprint.WriteHeader(http.StatusBadRequest)
 			fmt.Fprintf(webprint, "Device doesn't exist")
 		}
 	} else {
 		webprint.WriteHeader(http.StatusOK)
+		/*
+			for _, value := range viper.GetStringSlice("devices") {
+				fmt.Fprintf(webprint, "Device=%s\nLastCheckinTime=%s SecondsSinceLastCheckin=%s State=%s\n\n", strings.ToLower(value), allDevices[strings.ToLower(value)], timeSinceLastCheckin(allDevices[strings.ToLower(value)]), checkTTL(allDevices[strings.ToLower(value)]))
+			}
+		*/
+
+		var template = "<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>"
+		fmt.Fprintf(webprint, "<table>")
+		fmt.Fprintf(webprint, "<tr><th align='left'>Device</th><th align='left'>LastCheckin</th><th align='left'>SecondsSinceCheckin</th><th align='left'>State</th></tr>")
+		datelayout := "Mon Jan _2 15:04:05 MST 2006"
+
+		var lastcheckindate string
+		var timesincelastcheckin string
+
 		for _, value := range viper.GetStringSlice("devices") {
-			fmt.Fprintf(webprint, "Device=%s\nLastCheckinTime=%s State=%s\n\n", strings.ToLower(value), allDevices[strings.ToLower(value)], checkTTL(allDevices[strings.ToLower(value)]))
+
+			if allDevices[strings.ToLower(value)].IsZero() {
+				lastcheckindate = "Never"
+				timesincelastcheckin = "Never"
+			} else {
+				lastcheckindate = allDevices[strings.ToLower(value)].Format(datelayout)
+				timesincelastcheckin = timeSinceLastCheckin(allDevices[strings.ToLower(value)])
+			}
+
+			fmt.Fprintf(webprint, template, strings.ToLower(value), lastcheckindate, timesincelastcheckin, checkTTL(allDevices[strings.ToLower(value)]))
+
+			//fmt.Fprintf(webprint, template, strings.ToLower(value), allDevices[strings.ToLower(value)].Format(datelayout), timeSinceLastCheckin(allDevices[strings.ToLower(value)]), checkTTL(allDevices[strings.ToLower(value)]))
+
 		}
+		fmt.Fprintf(webprint, "</table>")
+
 	}
 
 }
@@ -244,8 +273,14 @@ func displayConfig() {
 
 func checkTTL(checkthis time.Time) string {
 	if time.Now().Sub(checkthis).Seconds() >= float64(viper.GetInt("ttl")) {
-		return "error"
+		return "inactive"
 	} else {
-		return "good"
+		return "active"
 	}
+}
+
+func timeSinceLastCheckin(checkthis time.Time) string {
+	temptime := time.Now().Sub(checkthis)
+	tempseconds := fmt.Sprintf("%.0f", temptime.Seconds())
+	return tempseconds
 }

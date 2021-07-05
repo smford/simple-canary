@@ -12,7 +12,7 @@ Uptimerobot allows for up to 50 checks on its free service, however their ping s
 This tool allows you to use their http/https or keyword monitor methods to have the same capabilities as their "Heartbeat" service but for free.
 
 Usage Scenario
--------------
+--------------
 
 You have a number of IoT devices, servers and cronjobs that you need to know are working and are online.
 
@@ -30,8 +30,8 @@ For simple-canary to work you must configure three things:
 - configured each device to checkin to simple-canary
 - configure uptimerobot to monitor the devices specific status page
 
-
-1. Create a configuration file called `config.yaml` an example is available below:
+## Configuring the Server
+Create a configuration file called `config.yaml` an example is available below:
   ```
   checkintoken: mycheckintoken
   statustoken: mystatustoken
@@ -51,8 +51,7 @@ For simple-canary to work you must configure three things:
   verbose: false
   ```
 
-Configuration File Options
---------------------------
+### Configuration File Options
 | Setting | Details |
 |:--|:--|
 | checkintoken | Token used by a device to checkin |
@@ -65,16 +64,25 @@ Configuration File Options
 | devices | A list of devices to accept checkins for |
 | verbose | Enable verbose mode.  Note tokens will be displayed in the logs |
 
-Run:
+Starting simple-canary
+----------------------
+
+After configuring the config.yaml in the same directory as the simple-canary executable, simply:
+
+`./simple-canary`
+
+
+If you want to have the configuration file in a different location, you can start simple-canary like so:
+
 `simple-canary --config /path/to/config.yaml`
 
 ### Configure Clients
 
 - IoT Device, assuming the IoT device is called "frontdoor"
-  Configure it to do an http request to: `http://0.0.0.0:54034/checkin/frontdoor?token=mycheckintoken`
-- Cronjob: Add the following line to the end of the script that is run by your cronjob: `wget --spider "http://0.0.0.0:54034/checkin/cronjob1?token=mycheckintoken" >/dev/null 2>&1`
+  Configure it to do an http request to: `http://192.168.10.1:54034/checkin/frontdoor?token=mycheckintoken`
+- Cronjob: Add the following line to the end of the script that is run by your cronjob: `wget --spider "http://192.168.10.1:54034/checkin/cronjob1?token=mycheckintoken" >/dev/null 2>&1`
 - Server: Add the following cronjob causing the server to checkin ever 5 minutes
-`*/5 * * * * wget --spider "http://0.0.0.0:54034/checkin/server1?token=mycheckintoken" >/dev/null 2>&1`
+`*/5 * * * * wget --spider "http://192.168.10.1:54034/checkin/server1?token=mycheckintoken" >/dev/null 2>&1`
 
 
 ### Configuring UptimeRobot.com Monitors

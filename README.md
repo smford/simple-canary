@@ -1,4 +1,4 @@
-simple-canary
+Simple-canary
 =============
 
 A simple canary monitor.
@@ -23,18 +23,25 @@ You have a number of IoT devices, servers and cronjobs that you need to know are
 
 Installation
 ------------
-You can use any of these methods to install:
+### Via go
 - `# go get -v github.com/smford/simple-canary`
 
+### From Git
 Clone git repo and build yourself
 - `# git clone git@github.com:smford/simple-canary.git`
 - `# cd simple-canary`
 - `# go build`
 
-Via Docker
-- something
-- more
-
+### Docker
+1. Create the docker volume to store configuration
+    ```
+    # docker volume create simple-canary-config
+    ```
+1. Copy `config.yaml` and `index.html` to `/var/lib/docker/volumes/simple-canary-config/_data/`
+1. Start up simple-canary
+    ```
+    # docker run --name simple-canary -d --restart always -p 54034:80/tcp -v simple-canary-config:/config smford/simple-canary:0.1.0
+    ```
 
 Configuration
 -------------
@@ -44,7 +51,7 @@ For simple-canary to work you must configure three things:
 - each device to checkin to simple-canary
 - uptimerobot to monitor the devices specific status pages
 
-## Configuring the Server
+### Configuring the Server
 Create a configuration file called `config.yaml` an example is available below:
 
 ```
@@ -66,7 +73,7 @@ devices:
 verbose: false
 ```
 
-### Configuration File Options
+#### Configuration File Options
 | Setting | Details |
 |:--|:--|
 | checkintoken | Token used by a device to checkin |
@@ -82,6 +89,8 @@ verbose: false
 Starting simple-canary
 ----------------------
 
+### From command line
+
 After configuring the config.yaml in the same directory as the simple-canary executable, simply:
 
 `# simple-canary`
@@ -92,9 +101,9 @@ If you want to have the configuration file in a different location, you can star
 `# simple-canary --config /path/to/config.yaml`
 
 
-Docker
-`# docker bla bla`
+### By Docker
 
+See the instructions here https://github.com/smford/simple-canary#docker
 
 Configure Clients
 -----------------
@@ -138,3 +147,4 @@ To Do
 -----
 - per device TTL
 - per device checkintoken
+- remove tokens from being displayed in verbose mode

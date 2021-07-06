@@ -11,6 +11,10 @@ Uptimerobot allows for up to 50 checks on its free service, however their ping s
 
 This tool allows you to use their http/https or keyword monitor methods to have the same capabilities as their "Heartbeat" service but for free.
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/smford/simple-canary/master/images/screenshot.png" width="600">
+</p>
+
 Usage Scenario
 --------------
 You have a number of IoT devices, servers and cronjobs that you need to know are working and are online.

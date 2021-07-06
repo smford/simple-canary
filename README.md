@@ -13,7 +13,6 @@ This tool allows you to use their http/https or keyword monitor methods to have 
 
 Usage Scenario
 --------------
-
 You have a number of IoT devices, servers and cronjobs that you need to know are working and are online.
 
 1. You configure each server, IoT device and cronjob to "checkin" to a unique simple-canary url with a token (password)
@@ -45,7 +44,6 @@ Clone git repo and build yourself
 
 Configuration
 -------------
-
 For simple-canary to work you must configure three things:
 - the simple-canary server
 - each device to checkin to simple-canary
@@ -53,7 +51,6 @@ For simple-canary to work you must configure three things:
 
 ### Configuring the Server
 Create a configuration file called `config.yaml` an example is available below:
-
 ```
 checkintoken: mycheckintoken
 statustoken: mystatustoken
@@ -88,21 +85,16 @@ verbose: false
 
 Starting simple-canary
 ----------------------
-
 ### From command line
-
 After configuring the config.yaml in the same directory as the simple-canary executable, simply:
 
 `# simple-canary`
-
 
 If you want to have the configuration file in a different location, you can start simple-canary like so:
 
 `# simple-canary --config /path/to/config.yaml`
 
-
 ### By Docker
-
 See the instructions here https://github.com/smford/simple-canary#docker
 
 Configure Clients
@@ -118,7 +110,12 @@ Configure Clients
 
 Configuring UptimeRobot.com Monitors
 ------------------------------------
-
+1. Create a new `Keyword` monitor
+1. Configure with the following settings:
+    - Friendly Name: SOMETHING
+    - URL: https://your.website.com/status/DEVICE_NAME?token=mystatustoken
+    - Keyword: Online
+    - Alert when: Keyword Not Exists
 
 Command Line Options
 --------------------
@@ -131,8 +128,9 @@ Command Line Options
 
 API Endpoints
 -------------
-
 Assuming simple-canary is configured to use 192.168.10.1:54034 and there is a device called `frontdoor_bot`
+
+Note: When doing a status check, it is optional to have a `?token=mystatustoken`.  This can be disabled or enabled by configuring option `statustokencheck` within the config.yaml file
 
 | Task | URL |
 |:--|:--|

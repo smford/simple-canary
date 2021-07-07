@@ -1,3 +1,5 @@
+[![Go Report Card](https://goreportcard.com/badge/github.com/smford/simple-canary)](https://goreportcard.com/report/github.com/smford/simple-canary) [![License: GPL v3](https://img.shields.io/badge/License-Apache%20v2-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
+
 Simple-canary
 =============
 

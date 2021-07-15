@@ -152,3 +152,4 @@ To Do
 - per device TTL
 - per device checkintoken
 - remove tokens from being displayed in verbose mode
+- implement github actions to build and publish docker images

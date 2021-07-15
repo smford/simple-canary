@@ -1,0 +1,11 @@
+# recompile for amd64
+GOOS=linux GOARCH=amd64 go build -ldflags "-s -w"
+
+# compress
+upx ./simple-canary
+
+# docker build
+docker build -t smford/simple-canary:0.1.1 -t smford/simple-canary:latest .
+
+# push up version
+docker push smford/simple-canary

@@ -18,7 +18,7 @@ import (
 	"time"
 )
 
-const APPVERSION = "0.1.0"
+const APPVERSION = "0.1.1"
 
 var allDevices = make(map[string]time.Time)
 
@@ -210,13 +210,41 @@ func handlerStatus(webprint http.ResponseWriter, r *http.Request) {
 	} else {
 		webprint.WriteHeader(http.StatusOK)
 
-		var template = "      <tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>\n"
+		var template = "      <tr><td>%s</td><td>%s</td><td>%s</td><td id=\"%s\">%s</td></tr>\n"
 
 		header := `<!DOCTYPE HTML>
 <html>
 <head>
+<style>
+table, th, td {
+  border: 1px solid black;
+  border-collapse: collapse;
+  font-family:monospace,monospace;
+  font-size:1em;
+}
+th {
+  font-weight: bold;
+  padding: 15px;
+  text-align: left;
+}
+td {
+  padding: 15px;
+  text-align: left;
+}
+#Online {
+  background-color: #228B22;
+  color: white;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+#Offline {
+  background-color: #DC143C;
+  color: white;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+</style>
   <title>Status Page</title>
-  <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.6/build/pure-min.css" integrity="sha384-Uu6IeWbM+gzNVXJcM9XV3SohHtmWE+3VGi496jvgX1jyvDTXfdK+rfZc8C1Aehk5" crossorigin="anonymous">
 </head>
 <body>
 `
@@ -225,7 +253,7 @@ func handlerStatus(webprint http.ResponseWriter, r *http.Request) {
 </html>`
 
 		fmt.Fprintf(webprint, header)
-		fmt.Fprintf(webprint, "  <table class=\"pure-table pure-table-bordered\">\n")
+		fmt.Fprintf(webprint, "  <table>\n")
 		fmt.Fprintf(webprint, "    <thead><tr><th>Device</th><th>Last Checkin</th><th>Seconds Since Checkin</th><th>State</th></tr></thead>\n")
 		fmt.Fprintf(webprint, "    <tbody>\n")
 		datelayout := "Mon Jan _2 15:04:05 MST 2006"
@@ -246,7 +274,7 @@ func handlerStatus(webprint http.ResponseWriter, r *http.Request) {
 				status = checkTTL(allDevices[strings.ToLower(value)])
 			}
 
-			fmt.Fprintf(webprint, template, strings.ToLower(value), lastcheckindate, timesincelastcheckin, status)
+			fmt.Fprintf(webprint, template, strings.ToLower(value), lastcheckindate, timesincelastcheckin, status, status)
 
 		}
 		fmt.Fprintf(webprint, "    </tbody>\n")

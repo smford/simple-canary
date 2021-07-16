@@ -2,7 +2,7 @@ checkintoken: sometoken
 statustoken: statustoken
 statustokencheck: false
 listenip: 0.0.0.0
-listenport: 54034
+listenport: 54035
 indexhtml: index.html
 ttl: 10
 devices:

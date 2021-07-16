@@ -134,16 +134,16 @@ Command Line Options
 
 API Endpoints
 -------------
-Assuming simple-canary is configured to use 192.168.10.1:54034 and there is a device called `frontdoor_bot`
+Assuming simple-canary is configured to use 192.168.10.1:54035 and there is a device called `frontdoor_bot`
 
 Note: When doing a status check, it is optional to have a `?token=mystatustoken`.  This can be disabled or enabled by configuring option `statustokencheck` within the config.yaml file
 
 | Task | URL |
 |:--|:--|
 | Display index.html | `http://192.168.10.1:54034/` |
-| Checkin device `frontdoor_bot` | `http://192.168.10.1:54034/checkin/frontdoor_bot?token=checkintoken` |
-| Get Status for `frontdoor_bot` | `http://192.168.10.1:54034/status/frontdoor_bot?token=statustoken` |
-| Get Status for all devices | `http://192.168.10.1:54034/status?token=statustoken` |
+| Checkin device `frontdoor_bot` | `http://192.168.10.1:54035/checkin/frontdoor_bot?token=checkintoken` |
+| Get Status for `frontdoor_bot` | `http://192.168.10.1:54035/status/frontdoor_bot?token=statustoken` |
+| Get Status for all devices | `http://192.168.10.1:54035/status?token=statustoken` |
 
 
 

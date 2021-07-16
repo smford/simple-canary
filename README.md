@@ -62,7 +62,7 @@ checkintoken: mycheckintoken
 statustoken: mystatustoken
 statustokencheck: false
 listenip: 0.0.0.0
-listenport: 54034
+listenport: 54035
 indexhtml: index.html
 ttl: 300
 devices:
@@ -107,11 +107,11 @@ Configure Clients
 -----------------
 
 - IoT Device, assuming the IoT device is called "frontdoor"
-  Configure it to do an http request to: `http://192.168.10.1:54034/checkin/frontdoor?token=mycheckintoken`
+  Configure it to do an http request to: `http://192.168.10.1:54035/checkin/frontdoor?token=mycheckintoken`
 - Cronjob: Add the following line to the end of the script that is run by your cronjob:
-  `wget --spider "http://192.168.10.1:54034/checkin/cronjob1?token=mycheckintoken" >/dev/null 2>&1`
+  `wget --spider "http://192.168.10.1:54035/checkin/cronjob1?token=mycheckintoken" >/dev/null 2>&1`
 - Server: Add the following cronjob causing the server to checkin ever 5 minutes
-  `*/5 * * * * wget --spider "http://192.168.10.1:54034/checkin/server1?token=mycheckintoken" >/dev/null 2>&1`
+  `*/5 * * * * wget --spider "http://192.168.10.1:54035/checkin/server1?token=mycheckintoken" >/dev/null 2>&1`
 
 
 Configuring UptimeRobot.com Monitors

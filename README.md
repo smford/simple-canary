@@ -45,7 +45,7 @@ Clone git repo and build yourself
 1. Copy `config.yaml` and `index.html` to `/var/lib/docker/volumes/simple-canary-config/_data/`
 1. Start up simple-canary
     ```
-    # docker run --name simple-canary -d --restart always -p 54034:80/tcp -v simple-canary-config:/config smford/simple-canary:0.1.0
+    # docker run --name simple-canary -d --restart always -p 54035:80/tcp -v simple-canary-config:/config smford/simple-canary:latest
     ```
 
 Configuration

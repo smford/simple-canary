@@ -153,3 +153,4 @@ To Do
 - per device checkintoken
 - remove tokens from being displayed in verbose mode
 - implement github actions to build and publish docker images
+- generic checker for simple-canary, so that when run on prem can act as a test of the internet

@@ -11,3 +11,4 @@ devices:
 - rollerdoor
 - laser
 verbose: false
+canarystatus: false

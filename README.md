@@ -74,6 +74,7 @@ devices:
 - cronjob2
 - server1
 verbose: false
+canarystatus: false
 ```
 
 #### Configuration File Options
@@ -88,6 +89,9 @@ verbose: false
 | ttl | The number of seconds to wait after a checkin before marking a device as offline|
 | devices | A list of devices to accept checkins for |
 | verbose | Enable verbose mode.  Note tokens will be displayed in the logs |
+| canarystatus | Enable simple-canary status.  This can be used to discern whether simple-canary is running or not, accessable via https://your.website.com/status/canary |
+
+canarystatus is useful in certain situations, for example when simple-canary is hosted on premise and you wish to discern whether simple-canary is up, and thus indicating whether the internet connection to the on premise is working.
 
 Starting simple-canary
 ----------------------
@@ -153,4 +157,3 @@ To Do
 - per device checkintoken
 - remove tokens from being displayed in verbose mode
 - implement github actions to build and publish docker images
-- generic checker for simple-canary, so that when run on prem can act as a test of the internet

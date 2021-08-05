@@ -18,7 +18,7 @@ import (
 	"time"
 )
 
-const APPVERSION = "0.1.1"
+const APPVERSION = "0.1.2"
 
 var allDevices = make(map[string]time.Time)
 
@@ -114,6 +114,7 @@ func startWeb(listenip string, listenport string, usetls bool) {
 
 	// all devices status
 	r.HandleFunc("/status", handlerStatus)
+	r.HandleFunc("/status/", handlerStatus)
 
 	// enable verbose logging
 	if viper.GetBool("verbose") {
@@ -200,6 +201,13 @@ func handlerStatus(webprint http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
 	if len(vars["device"]) > 0 {
+
+		if viper.GetBool("canarystatus") && strings.ToLower(vars["device"]) == "canary" {
+			webprint.WriteHeader(http.StatusOK)
+			fmt.Fprintf(webprint, "Online")
+			return
+		}
+
 		if value, ok := allDevices[strings.ToLower(vars["device"])]; ok {
 			webprint.WriteHeader(http.StatusOK)
 			fmt.Fprintf(webprint, "%s", checkTTL(value))
